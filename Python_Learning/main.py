@@ -146,13 +146,41 @@
 
 #----------Format specifiers={value:flags} format a value based on what flags are inserted
 
-price1=2.23556456456
-price2=-34334.323423423
-price3=123.45
+# price1=2.23556456456
+# price2=-34334.323423423
+# price3=123.45
 
-print(f"Price 1 is {price1:.2f}") #only shows two decimal values 
-print(f"Price 2 is ${price2:10}") # each value now has a total of 10 spaces. makes 
-print(f"Price 3 is ${price3:010}") #adds zero in front of digits. and makes 10 characters total.
-print(f"Price 3 is ${price3:,}") #seperates thousands with comma's.
+# print(f"Price 1 is {price1:.2f}") #only shows two decimal values 
+# print(f"Price 2 is ${price2:10}") # each value now has a total of 10 spaces. makes 
+# print(f"Price 3 is ${price3:010}") #adds zero in front of digits. and makes 10 characters total.
+# print(f"Price 3 is ${price3:,}") #seperates thousands with comma's.
+
+
+#-------while loop
+
+# age=int(input("Enter your age:"))
+
+# while age<0 :
+#     print("Age can't be negative. Try again!")
+#     age=int(input("Enter your age:"))
+# print(f"You are {age} years old!")
+
+# food=input("enter a food you like(q to quit):")
+
+# while not food == "q":
+#     print(f"You like {food}")
+#     food= input("Enter another food you like (q to quite:)")
+# print("BYE")
+
+#--------Python compund interest calculator:
+
+principle=0
+rate=0
+time=0
+ 
+while principle <=0:
+    principle = float(input("Enter the principle amount:"))
+    if principle<=0:
+        print("Principle can't be lesss than or equal to zero")
 
 
