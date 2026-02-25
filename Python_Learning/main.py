@@ -31,25 +31,70 @@
 
 #IF-else operator
 
-operator= input("Enter an operator( + - * /): ")
-num1= float(input("Enter the 1st number:"))
-num2= float(input("Enter the 2nd number:"))
+# operator= input("Enter an operator( + - * /): ")
+# num1= float(input("Enter the 1st number:"))
+# num2= float(input("Enter the 2nd number:"))
 
 
-if operator == "+":
-    result=num1+num2
-    print(result)
-elif operator == "-":
-    result=num1-num2
-    print(result)
-elif operator == "*":
-    result=num1*num2
-    print(result)
-elif operator == "/":
-    if num2==0:
-        print("Cannot be divided by zero")
-        pass
-    else:
-        result=num1/num2
-        print(result)
+# if operator == "+":
+#     result=num1+num2
+#     print(result)
+# elif operator == "-":
+#     result=num1-num2
+#     print(result)
+# elif operator == "*":
+#     result=num1*num2
+#     print(result)
+# elif operator == "/":
+#     if num2==0:
+#         print("Cannot be divided by zero")
+#         pass
+#     else:
+#         result=num1/num2
+#         print(result)
+
+
+#PYthon weight converter
+
+# weight= float(input("Enter your weight:"))
+# unit=input("Kilograms or Pounds: (K or L):")
+
+# if unit=="K":
+#     weight=weight*2.205
+#     unit="Lbs."
+#     print(f"Your weight is: {round(weight,1)} {unit}")
+
+# elif unit=="L":
+#     weight=weight/2.205
+#     unit="kgs."
+#     print(f"Your weight is: {round(weight,1)} {unit}")
+
+# else:
+#     print(f"{unit} was not valid")
+
+
+#---------Logical operators= and, or , not
+#OR:
+# temp= int(input("Enter the temp:"))
+# is_raining=False
+# if temp >35 or temp <0 or is_raining:
+#     print("The outdoor event is cancled")
+# else:
+#     print("The outdoor event is still scheduled!")
+
+# #AND:
+# temp= int(input("Enter the temp:"))
+# is_raining=False
+# if temp >35  and  is_raining:
+#     print("The outdoor event is cancled")
+# else:
+#     print("The outdoor event is still scheduled!")
+
+# print(is_raining)
+
+
+#----conditional expression: A one-line shortcut for the if-else statement(ternary operator)
+
+num=0
+print("Positive" if num>0 else "Negative")
 
