@@ -95,6 +95,64 @@
 
 #----conditional expression: A one-line shortcut for the if-else statement(ternary operator)
 
-num=0
-print("Positive" if num>0 else "Negative")
+#Formula: X if condition else Y
+
+# num=0
+# a=6
+# b=7
+# print("Positive" if num>0 else "Negative")
+
+# result="EVEN" if num%2 ==0 else "ODD"
+
+# max_num = a if a > b else b
+# min_num= a if a<b else b
+# print(min_num)
+
+
+#--------String methods
+
+# name=input("ENter your full name:")
+
+# name.find("h") #find characters
+# result=name.rfind("a") #find from right side
+# #result=len(name)
+# name=name.capitalize() 
+# name=name.lower()
+# name=name.upper()
+# result=name.isdigit() # checks if every digit is a number
+# result=name.isalpha() # Checks if every character is a alphabet
+# phone_number=123-343-5454
+# #result= phone_number.count("-") #count how many characters within the string
+
+# #phone_number=phone_number.replace("-", " ") # replaces character with one another
+# print(result)
+# print(help(str)) #gives string methods names and their works in terminal
+
+#-------------indexing= accessing elemnets of a sequence using [] (indexing operator)  [start:end:step]
+
+# #start is inclusive meaning will be counted but end is exclusive which means will not be counted. 
+# credit_number ="1234-5678-3434-2325" 
+# print(credit_number[4])
+
+# print(credit_number[0:4])
+
+# credit_number[-1] # starts from ride side
+
+# print(credit_number[-2::-2]) #starts counting from 2nd right number and skips one number in the middle 
+
+# last_digits= credit_number[-4:]
+
+# print(f"XXXX-XXXX-{last_digits}")
+
+#----------Format specifiers={value:flags} format a value based on what flags are inserted
+
+price1=2.23556456456
+price2=-34334.323423423
+price3=123.45
+
+print(f"Price 1 is {price1:.2f}") #only shows two decimal values 
+print(f"Price 2 is ${price2:10}") # each value now has a total of 10 spaces. makes 
+print(f"Price 3 is ${price3:010}") #adds zero in front of digits. and makes 10 characters total.
+print(f"Price 3 is ${price3:,}") #seperates thousands with comma's.
+
 
