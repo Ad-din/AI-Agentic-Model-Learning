@@ -29,6 +29,11 @@ print("elements >4:", arr[bool_mask]) # prints those elements
 
 # combinig boolean and logical operators
 
-bool_mask_combined
+bool_mask_combined= (arr>2) & (arr<8)
 
+print("Boolean mask for arr>2 and arr < 8 : \n", bool_mask_combined)
+
+print("Elements matching this condition:", arr[bool_mask_combined])
+
+#Shape manipulation
 

@@ -174,13 +174,64 @@
 
 #--------Python compund interest calculator:
 
-principle=0
-rate=0
-time=0
+# principle=0
+# rate=0
+# time=0
  
-while principle <=0:
-    principle = float(input("Enter the principle amount:"))
-    if principle<=0:
-        print("Principle can't be lesss than or equal to zero")
+# while principle <=0:
+#     principle = float(input("Enter the principle amount:"))
+#     if principle<=0:
+#         print("Principle can't be lesss than or equal to zero")
 
+
+#---------Dictionaries= a collection of {key:value} pairs ordered and changable. NO duplicates
+# capitals={"USA":"Washington D.C",
+#           "Bangladesh":"DHaka",
+#           "China":"Beijing",
+#           "Russia":"Moscow"}
+
+# print(capitals.get("USA"))
+
+# if capitals.get("Japan"):
+#     print("That capitals exists!")
+# else:
+#     print("THere is no record")
+
+# capitals.update({"Germany":"Berlin"})
+# capitals.update({"USA":"Moscow"})
+
+# capitals.pop("China")
+
+# print(capitals)
+# keys=capitals.keys()
+# print(keys)
+
+# values=capitals.values()
+
+# print(values)
+
+# for key in capitals.keys():
+#     print(key)
+
+# items=capitals.items()
+
+# for key,value in capitals.items():
+#     print(f"{key}: {value}")
+
+
+
+#-------Random module---------
+
+import random
+print(help(random))
+
+number=random.randint(1,30)
+print(number)
+options=("rock","paper","scissor")
+
+option=random.choice(options)
+
+print(option)
+
+random.shuffle(options)
 
