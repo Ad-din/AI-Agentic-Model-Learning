@@ -1,4 +1,6 @@
 
+from typing import Optional
+
 from fastapi import  FastAPI
 from fastapi.params import Body
 from pydantic import BaseModel
@@ -6,10 +8,11 @@ from pydantic import BaseModel
 app = FastAPI()
 
 
-# class Post(BaseModel):
-#     title: 
-#     content:
-
+class Post(BaseModel):
+    title: str
+    content: str
+    published:bool = True
+    rating: Optional[int]=None
 
 
 @app.get("/")
@@ -35,6 +38,9 @@ def read_item(item_id: int, q: str | None = None):
     return {"item_id": item_id, "q": q}
 
 @app.post("/createpost")
-def createPost(para: dict =Body(...)):
-    print(para)
-    return {"new_Post":f"Title :{para['title']} Content: {para['content']} Size:{para['size']}"}
+def createPost(post:Post):
+    print(post.published,post.rating)
+    convertedToDict=post.model_dump()
+    print(convertedToDict)
+    return{ "data":convertedToDict}
+
