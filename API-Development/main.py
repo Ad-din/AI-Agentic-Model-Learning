@@ -1,4 +1,5 @@
 
+from random import randrange
 from typing import Optional
 
 from fastapi import  FastAPI
@@ -14,22 +15,31 @@ class Post(BaseModel):
     published:bool = True
     rating: Optional[int]=None
 
+my_post=[{"id":1,"title":"title of post1",
+          "content":"content of post 1"
+          },{"title":"favourits food","content":"I love burger","id":2}]
+my_post2=[{"id":1,"title":"title of post1",
+          "content":"content of post 1"
+          },{"title":"favourits food","content":"I love burger","id":2}]
+
+
 
 @app.get("/")
 def read_root():
     return {"Hello": "World"}
 
 
-
+@app.get("/posts")
+def get_post():
+    return {"data":my_post2}
 
 #retriving posts from the platform
-@app.get("/posts/{user_id}")
-def get_posts(user_id):
-    return {"User ID":user_id,
-            "Name":"Abdullah",
-            "Age":6,
-            "expertise":"None",
-            "Saved?":"YES"}
+@app.get("/posts/{id}")
+def get_posts(id):
+    print(id)
+    return{
+        "post_details":f"Here is a post id:{id}"
+    }
 
 
 
@@ -44,3 +54,13 @@ def createPost(post:Post):
     print(convertedToDict)
     return{ "data":convertedToDict}
 
+@app.post("/posts")
+def create_posts(post:Post):
+    post_dict=post.model_dump()
+    post_dict['id']=randrange(0,1000000)
+    my_post2.append(post_dict)
+    return {'data':post_dict} 
+
+@app.get("/posts/latest")
+def get_latest():
+    print()
