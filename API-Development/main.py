@@ -2,7 +2,7 @@
 from random import randrange
 from typing import Optional
 
-from fastapi import  FastAPI
+from fastapi import  FastAPI, Response, status
 from fastapi.params import Body
 from pydantic import BaseModel
 
@@ -22,7 +22,10 @@ my_post2=[{"id":1,"title":"title of post1",
           "content":"content of post 1"
           },{"title":"favourits food","content":"I love burger","id":2}]
 
-
+def find_post(id):
+    for p in my_post:
+        if p['id']== id:
+            return p
 
 @app.get("/")
 def read_root():
@@ -33,14 +36,23 @@ def read_root():
 def get_post():
     return {"data":my_post2}
 
+
+@app.get("/posts/latest")
+def get_latest():
+    post=my_post[len(my_post)-1]
+    return{"detail":post}
+
+
 #retriving posts from the platform
 @app.get("/posts/{id}")
-def get_posts(id):
-    print(id)
+def get_posts(id:int,response: Response):  #id:int. this automatically converts id to an integer.
+    post=find_post(id)
+    if not post:
+        response.status_code=status.HTTP_404_NOT_FOUND
+        return{"message":f"Post with {id} was not found!"}
     return{
-        "post_details":f"Here is a post id:{id}"
+        "post_details":post
     }
-
 
 
 @app.get("/items/{item_id}")
@@ -61,6 +73,3 @@ def create_posts(post:Post):
     my_post2.append(post_dict)
     return {'data':post_dict} 
 
-@app.get("/posts/latest")
-def get_latest():
-    print()
