@@ -2,7 +2,7 @@
 from random import randrange
 from typing import Optional
 
-from fastapi import  FastAPI, Response, status
+from fastapi import  FastAPI, HTTPException, Response, status
 from fastapi.params import Body
 from pydantic import BaseModel
 
@@ -14,6 +14,7 @@ class Post(BaseModel):
     content: str
     published:bool = True
     rating: Optional[int]=None
+
 
 my_post=[{"id":1,"title":"title of post1",
           "content":"content of post 1"
@@ -27,14 +28,26 @@ def find_post(id):
         if p['id']== id:
             return p
 
+def find_indexed_post(id):
+    for i, p in enumerate(my_post):
+        if p.get('id')==id:
+            return i
+
 @app.get("/")
 def read_root():
     return {"Hello": "World"}
 
+@app.post("/posts",status_code=status.HTTP_201_CREATED)
+def create_posts(post:Post):
+    post_dict=post.model_dump()
+    post_dict['id']=randrange(0,1000000)
+    my_post.append(post_dict)
+    return {'data':post_dict} 
+
 
 @app.get("/posts")
 def get_post():
-    return {"data":my_post2}
+    return {"data":my_post}
 
 
 @app.get("/posts/latest")
@@ -48,6 +61,8 @@ def get_latest():
 def get_posts(id:int,response: Response):  #id:int. this automatically converts id to an integer.
     post=find_post(id)
     if not post:
+        #raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail=f"post with id {id} not found!")
+        # or we can write it like this: (first one is better.)
         response.status_code=status.HTTP_404_NOT_FOUND
         return{"message":f"Post with {id} was not found!"}
     return{
@@ -66,10 +81,30 @@ def createPost(post:Post):
     print(convertedToDict)
     return{ "data":convertedToDict}
 
-@app.post("/posts")
-def create_posts(post:Post):
+
+
+#Delete a post:
+
+@app.delete("/posts/{id}",status_code=status.HTTP_204_NO_CONTENT)
+def delete_post(id:int):
+    index=find_indexed_post(id)
+    if index==None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"post with id: {id} does not exist")
+    my_post.pop(index)
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
+
+#update information --put operation
+
+@app.put("/posts/{id}")
+def update_info(id:int,post:Post):
+    index=find_indexed_post(id)
+
+    if index==None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                            detail=f"post with id: {id } not found!")
+
     post_dict=post.model_dump()
-    post_dict['id']=randrange(0,1000000)
-    my_post2.append(post_dict)
-    return {'data':post_dict} 
+    post_dict['id']=id
+    my_post[index]=post_dict
+    return{'Data':post_dict}
 
