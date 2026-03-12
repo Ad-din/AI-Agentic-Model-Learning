@@ -109,3 +109,6 @@ def update_info(id:int,post:Post):
     return{'Data':post_dict}
 
 #next we will update with sql and we will live database changes compared to the api requests. Fetching and uploading with permanent changes.
+
+
+#SQL Learning complete after 4 days. Next we will implement sql with pydantic for validation and further process.
