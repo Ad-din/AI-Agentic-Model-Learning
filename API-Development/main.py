@@ -5,6 +5,27 @@ from typing import Optional
 from fastapi import  FastAPI, HTTPException, Response, status
 from fastapi.params import Body
 from pydantic import BaseModel
+import psycopg2
+from psycopg2.extras import RealDictCursor
+import time
+
+
+while True:
+    try:
+        conn=psycopg2.connect(
+        host='localhost',
+        database='fastapi',
+        user='postgres',
+        password='admin',
+        cursor_factory=RealDictCursor)
+        cursor =conn.cursor()
+        print("Database connection was successful!")
+        break
+    except Exception as error:
+        print("Connection to database failed!")
+        print("Error:",error)
+        time.sleep(2)
+
 
 app = FastAPI()
 
@@ -47,13 +68,31 @@ def create_posts(post:Post):
 
 @app.get("/posts")
 def get_post():
-    return {"data":my_post}
+    cursor.execute("SELECT * FROM posts")
+    posts=cursor.fetchall()
+    return {"data":posts}
 
 
 @app.get("/posts/latest")
 def get_latest():
     post=my_post[len(my_post)-1]
     return{"detail":post}
+
+@app.get("/products")
+def get_products():
+    cursor.execute("SELECT name, price FROM products")
+    products = cursor.fetchall()
+
+    result = []
+    for product in products:
+        result.append({
+            "name": product["name"],
+            "price": product["price"]
+        })
+
+    return result
+
+
 
 
 #retriving posts from the platform
@@ -112,3 +151,4 @@ def update_info(id:int,post:Post):
 
 
 #SQL Learning complete after 4 days. Next we will implement sql with pydantic for validation and further process.
+
