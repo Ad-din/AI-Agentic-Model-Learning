@@ -2,17 +2,18 @@
 from random import randrange
 from typing import Optional
 
-from fastapi import  FastAPI, HTTPException, Response, status
+from fastapi import  FastAPI, HTTPException, Response, status,Depends
 from fastapi.params import Body
 from pydantic import BaseModel
 import psycopg2
 from psycopg2.extras import RealDictCursor
 import time
-from . import model
-from .database import engine, SessionLocal, Base
+import model
+from database import engine,get_db
+from sqlalchemy.orm import Session
+
 
 model.Base.metadata.create_all(bind=engine)
-
 
 
 
@@ -64,6 +65,13 @@ def find_indexed_post(id):
 def read_root():
     return {"Hello": "World"}
 
+@app.get("/sqlalchemy")
+def test_db(db: Session = Depends(get_db)):
+   posts=db.query(model.Products).all()
+   return {"data :":posts}
+
+
+
 @app.post("/posts",status_code=status.HTTP_201_CREATED)
 def create_posts(post:Post):
     cursor.execute("INSERT INTO posts (title, content, published) VALUES (%s, %s, %s) RETURNING *",
@@ -98,14 +106,12 @@ def get_products():
 
     return result
 
-@app.get("/products/{id}")
-def getSpecificProducts(id:int):
-    retu
 
 
 
 
 #retriving posts from the platform
+
 @app.get("/posts/{id}")
 def get_posts(id:int,response: Response):  #id:int. this automatically converts id to an integer.
     cursor.execute("SELECT title FROM posts WHERE id = %s", (str(id),))
