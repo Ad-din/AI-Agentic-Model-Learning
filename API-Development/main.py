@@ -8,6 +8,12 @@ from pydantic import BaseModel
 import psycopg2
 from psycopg2.extras import RealDictCursor
 import time
+from . import model
+from .database import engine, SessionLocal, Base
+
+model.Base.metadata.create_all(bind=engine)
+
+
 
 
 while True:
@@ -60,11 +66,11 @@ def read_root():
 
 @app.post("/posts",status_code=status.HTTP_201_CREATED)
 def create_posts(post:Post):
-    post_dict=post.model_dump()
-    post_dict['id']=randrange(0,1000000)
-    my_post.append(post_dict)
-    return {'data':post_dict} 
-
+    cursor.execute("INSERT INTO posts (title, content, published) VALUES (%s, %s, %s) RETURNING *",
+                   (post.title, post.content, post.published))
+    new_post = cursor.fetchone()
+    conn.commit()
+    return {"data": new_post}
 
 @app.get("/posts")
 def get_post():
@@ -92,13 +98,19 @@ def get_products():
 
     return result
 
+@app.get("/products/{id}")
+def getSpecificProducts(id:int):
+    retu
+
 
 
 
 #retriving posts from the platform
 @app.get("/posts/{id}")
 def get_posts(id:int,response: Response):  #id:int. this automatically converts id to an integer.
-    post=find_post(id)
+    cursor.execute("SELECT title FROM posts WHERE id = %s", (str(id),))
+    post=cursor.fetchone()
+
     if not post:
         #raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail=f"post with id {id} not found!")
         # or we can write it like this: (first one is better.)
