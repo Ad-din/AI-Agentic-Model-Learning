@@ -11,7 +11,7 @@ import time
 import model
 from database import engine,get_db
 from sqlalchemy.orm import Session
-
+from schema import Post
 
 model.Base.metadata.create_all(bind=engine)
 
@@ -37,11 +37,6 @@ while True:
 app = FastAPI()
 
 
-class Post(BaseModel):
-    title: str
-    content: str
-    published:bool = True
-    
 
 
 my_post=[{"id":1,"title":"title of post1",
