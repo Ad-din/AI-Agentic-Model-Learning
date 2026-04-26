@@ -3,19 +3,13 @@ import model,schema,util
 from sqlalchemy.orm import Session
 from database import get_db
 from schema import PostCreate,Post
+import oauth2
 
 
-
-router=APIRouter()
-
-
-
-
-
-
-
-
-
+router=APIRouter(
+    prefix="/posts",
+    tags=['Posts']
+)
 
 
 
@@ -42,12 +36,12 @@ def read_root():
 
 
 
-@router.post("/posts",status_code=status.HTTP_201_CREATED,response_model=Post)
-def create_posts(post:PostCreate, db:Session=Depends(get_db)):
+@router.post("/",status_code=status.HTTP_201_CREATED,response_model=Post)
+def create_posts(post:PostCreate, db:Session=Depends(get_db),current_user: int=Depends(oauth2.get_current_user)):
     # print(**post.model_dump()) #** means it will automatically transfer the fields to their fields.
 
     # new_post= model.Post(title=post.title,content=post.content,published=post.published) # so instead of writing this like this we will use **.
-    
+    print(current_user.email)
     new_post=model.Post(**post.model_dump()) # this way we don't have write every field manually.
     db.add(new_post)
     db.commit()
@@ -61,7 +55,7 @@ def create_posts(post:PostCreate, db:Session=Depends(get_db)):
 #     # return posts
 
 
-@router.get("/posts/latest")
+@router.get("/latest")
 def get_latest():
     post=my_post[len(my_post)-1]
     return post
@@ -86,8 +80,8 @@ def get_latest():
 
 #retriving posts from the platform
 
-@router.get("/posts/{id}")
-def get_posts(id:int,db:Session=Depends(get_db)):  #id:int. this automatically converts id to an integer.
+@router.get("/{id}")
+def get_posts(id:int,db:Session=Depends(get_db),current_user:int=Depends(oauth2.get_current_user)):  #id:int. this automatically converts id to an integer.
     post=db.query(model.Post).filter(model.Post.id==id).first()
     # print(post) this print shows us what is query that is generated automatically.
     # cursor.execute("SELECT title FROM posts WHERE id = %s", (str(id),))
@@ -120,8 +114,8 @@ def createPost(post:PostCreate):
 
 #Delete a post:
 
-@router.delete("/posts/{id}",status_code=status.HTTP_204_NO_CONTENT)
-def delete_post(id:int,db:Session=Depends(get_db)):
+@router.delete("/{id}",status_code=status.HTTP_204_NO_CONTENT)
+def delete_post(id:int,db:Session=Depends(get_db),current_user:int=Depends(oauth2.get_current_user)):
     #Old way:
 
     # index=find_indexed_post(id)
@@ -144,8 +138,8 @@ def delete_post(id:int,db:Session=Depends(get_db)):
 
 #update information --put operation
 
-@router.put("/posts/{id}")
-def update_info(id:int,post:PostCreate,db:Session=Depends(get_db)):
+@router.put("/{id}")
+def update_info(id:int,post:PostCreate,db:Session=Depends(get_db),user_id:int=Depends(oauth2.get_current_user)):
 
     #Old way:
 

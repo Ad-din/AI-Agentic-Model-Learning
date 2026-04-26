@@ -4,10 +4,14 @@ from sqlalchemy.orm import Session
 from database import get_db
 
 
-router=APIRouter()
+router=APIRouter(
+    prefix="/users",
+    tags=['Users']
+    
+)
 
 
-@router.post("/users",status_code=status.HTTP_201_CREATED,response_model=schema.UserOut)
+@router.post("/",status_code=status.HTTP_201_CREATED,response_model=schema.UserOut)
 def created_user(user:schema.UserCreate,db:Session=Depends(get_db)):
     
     #hash the passsword - user.password
@@ -30,7 +34,7 @@ def created_user(user:schema.UserCreate,db:Session=Depends(get_db)):
 
 #SQL Learning complete after 4 days. Next we will implement sql with pydantic for validation and further process.
 
-@router.get("/users/{id}",response_model=schema.UserOut)
+@router.get("/{id}",response_model=schema.UserOut)
 def get_user(id:int,db:Session=Depends(get_db)):
     user=db.query(model.User).filter(model.User.id==id).first()
 
