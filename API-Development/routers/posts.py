@@ -1,3 +1,5 @@
+from typing import List
+
 from fastapi import  FastAPI, HTTPException, Response, status,Depends,APIRouter
 import model,schema,util
 from sqlalchemy.orm import Session
@@ -30,9 +32,9 @@ def find_indexed_post(id):
         if p.get('id')==id:
             return i
 
-@router.get("/")
-def read_root():
-    return {"Hello": "World"}
+# @router.get("/")
+# def read_root():
+#     return {"Hello": "World"}
 
 
 
@@ -41,18 +43,20 @@ def create_posts(post:PostCreate, db:Session=Depends(get_db),current_user: int=D
     # print(**post.model_dump()) #** means it will automatically transfer the fields to their fields.
 
     # new_post= model.Post(title=post.title,content=post.content,published=post.published) # so instead of writing this like this we will use **.
-    print(current_user.email)
-    new_post=model.Post(**post.model_dump()) # this way we don't have write every field manually.
+    print(current_user.id)
+    new_post=model.Post(user_id=current_user.id,**post.model_dump()) # this way we don't have write every field manually.
     db.add(new_post)
     db.commit()
     db.refresh(new_post) #this is used to get the post data we have sent.
     return new_post
 
-# @router.get("/posts")
-# def get_post():
-#     # cursor.execute("SELECT * FROM posts")
-#     # posts=cursor.fetchall()
-#     # return posts
+@router.get("/",response_model=List[schema.Post])
+def get_post(db:Session=Depends(get_db),current_user:int=Depends(oauth2.get_current_user)):
+    posts=db.query(model.Post).filter(model.Post.id == current_user.id).all()
+    if not posts:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail=f"posts from db not found!")
+    
+    return posts
 
 
 @router.get("/latest")
@@ -83,14 +87,9 @@ def get_latest():
 @router.get("/{id}")
 def get_posts(id:int,db:Session=Depends(get_db),current_user:int=Depends(oauth2.get_current_user)):  #id:int. this automatically converts id to an integer.
     post=db.query(model.Post).filter(model.Post.id==id).first()
-    # print(post) this print shows us what is query that is generated automatically.
-    # cursor.execute("SELECT title FROM posts WHERE id = %s", (str(id),))
-    # post=cursor.fetchone()
+    
 
     if not post:
-        #raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail=f"post with id {id} not found!")
-        # or we can write it like this: (first one is better.)
-        #response.status_code=status.HTTP_404_NOT_FOUND
         return{"message":f"Post with {id} was not found!"}
     return  post
     
@@ -125,10 +124,15 @@ def delete_post(id:int,db:Session=Depends(get_db),current_user:int=Depends(oauth
     # return Response(status_code=status.HTTP_204_NO_CONTENT)
 
     #ORM way:
-    post=db.query(model.Post).filter(model.Post.id==id)
-    if post.first()==None:
+    
+    post=db.query(model.Post).filter(model.Post.id==id).first()
+    if post==None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail=f"post with id:{id} does not exists!")
-    post.delete(synchronize_session=False)   
+    
+    if post.user_id != current_user.id:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,detail=f"You don't have permission to delete this post")
+
+    db.delete(post)  
     db.commit()
     return Response(status_code=status.HTTP_204_NO_CONTENT)
 
@@ -153,11 +157,16 @@ def update_info(id:int,post:PostCreate,db:Session=Depends(get_db),user_id:int=De
     # return{'Data':post_dict}
 
     #ORM way:
+    if post.user_id != oauth2.get_current_user.id:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,detail=f"You don't have permission to delete this post")
+
+
     updated_posts=db.query(model.Post).filter(model.Post.id==id).update(post.model_dump(exclude_unset=True),synchronize_session=False)
     
     if updated_posts == 0:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                            detail=f"post with id: {id } not found!")
+    
     
     db.commit()
     return {"message":"Updated successfully!"}

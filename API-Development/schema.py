@@ -1,3 +1,5 @@
+from typing import Optional
+
 from pydantic import BaseModel, ConfigDict, EmailStr
 from datetime import datetime
 
@@ -13,6 +15,7 @@ class PostCreate(PostBase):
 class Post(PostBase):
     id:int
     created_at:datetime
+    user_id:int
 
     model_config = ConfigDict(from_attributes=True) # This replaces orm_mode=True
     
@@ -26,3 +29,13 @@ class UserOut(BaseModel):
    created_at: datetime
    model_config = ConfigDict(from_attributes=True) # This replaces orm_mode=True
 
+class UserLogIn(BaseModel):
+    email:EmailStr
+    password:str
+
+class Token(BaseModel):
+    access_token:str
+    token_type:str
+
+class TokenData(BaseModel):
+    id: Optional[int]=None

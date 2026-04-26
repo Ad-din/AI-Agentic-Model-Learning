@@ -10,7 +10,7 @@ import time
 import model
 from database import engine,get_db
 from sqlalchemy.orm import Session
-from routers import posts,users
+from routers import posts,users,auth
 
 import schema, util
 
@@ -41,7 +41,7 @@ app = FastAPI()
 
 app.include_router(posts.router)
 app.include_router(users.router)
-
+app.include_router(auth.router)
 
 @app.get("/")
 def root():
