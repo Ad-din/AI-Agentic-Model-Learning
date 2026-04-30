@@ -1,4 +1,4 @@
-from typing import List
+from typing import List,Optional
 
 from fastapi import  FastAPI, HTTPException, Response, status,Depends,APIRouter
 import model,schema,util
@@ -50,12 +50,26 @@ def create_posts(post:PostCreate, db:Session=Depends(get_db),current_user: int=D
     db.refresh(new_post) #this is used to get the post data we have sent.
     return new_post
 
-@router.get("/",response_model=List[schema.Post])
-def get_post(db:Session=Depends(get_db),current_user:int=Depends(oauth2.get_current_user)):
-    posts=db.query(model.Post).filter(model.Post.id == current_user.id).all()
-    if not posts:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail=f"posts from db not found!")
-    
+
+@router.get("/", response_model=List[schema.Post])
+def get_post(
+    db: Session = Depends(get_db),
+    current_user: schema.TokenData = Depends(oauth2.get_current_user),
+    limit: int = 10,
+    skip: int = 0,
+    search: Optional[str] = ""
+):
+    query = db.query(model.Post).filter(
+        model.Post.user_id == current_user.id
+    )
+
+    if search:
+        query = query.filter(
+            model.Post.title.ilike(f"%{search}%")
+        )
+
+    posts = query.limit(limit).offset(skip).all()
+
     return posts
 
 
@@ -84,7 +98,7 @@ def get_latest():
 
 #retriving posts from the platform
 
-@router.get("/{id}")
+@router.get("/{id}",response_model=Post)
 def get_posts(id:int,db:Session=Depends(get_db),current_user:int=Depends(oauth2.get_current_user)):  #id:int. this automatically converts id to an integer.
     post=db.query(model.Post).filter(model.Post.id==id).first()
     

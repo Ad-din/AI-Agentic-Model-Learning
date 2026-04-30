@@ -12,22 +12,23 @@ class PostBase(BaseModel):
 class PostCreate(PostBase):
     pass
     
+class UserOut(BaseModel):
+   id:int 
+   email:EmailStr
+   created_at: datetime
+   model_config = ConfigDict(from_attributes=True) # This replaces orm_mode=True
+
 class Post(PostBase):
     id:int
     created_at:datetime
     user_id:int
-
+    owner:UserOut
     model_config = ConfigDict(from_attributes=True) # This replaces orm_mode=True
     
 class UserCreate(BaseModel):
     email:EmailStr
     password:str
 
-class UserOut(BaseModel):
-   id:int 
-   email:EmailStr
-   created_at: datetime
-   model_config = ConfigDict(from_attributes=True) # This replaces orm_mode=True
 
 class UserLogIn(BaseModel):
     email:EmailStr
