@@ -1,5 +1,5 @@
 from typing import List,Optional
-
+from sqlalchemy import func
 from fastapi import  FastAPI, HTTPException, Response, status,Depends,APIRouter
 import model,schema,util
 from sqlalchemy.orm import Session
@@ -51,7 +51,7 @@ def create_posts(post:PostCreate, db:Session=Depends(get_db),current_user: int=D
     return new_post
 
 
-@router.get("/", response_model=List[schema.Post])
+@router.get("/", response_model=List[schema.PostWithVotes])
 def get_post(
     db: Session = Depends(get_db),
     current_user: schema.TokenData = Depends(oauth2.get_current_user),
@@ -69,8 +69,8 @@ def get_post(
         )
 
     posts = query.limit(limit).offset(skip).all()
-
-    return posts
+    results=db.query(model.Post, func.count(model.Votes.post_id).label("votes")).join(model.Votes, model.Votes.post_id == model.Post.id,isouter=True).group_by(model.Post.id).all()
+    return results
 
 
 @router.get("/latest")
@@ -98,14 +98,15 @@ def get_latest():
 
 #retriving posts from the platform
 
-@router.get("/{id}",response_model=Post)
+@router.get("/{id}",response_model=schema.PostWithVotes)
 def get_posts(id:int,db:Session=Depends(get_db),current_user:int=Depends(oauth2.get_current_user)):  #id:int. this automatically converts id to an integer.
     post=db.query(model.Post).filter(model.Post.id==id).first()
     
+    results=db.query(model.Post, func.count(model.Votes.post_id).label("votes")).join(model.Votes, model.Votes.post_id == model.Post.id,isouter=True).group_by(model.Post.id).filter(model.Post.id==id).first()
 
     if not post:
         return{"message":f"Post with {id} was not found!"}
-    return  post
+    return  results
     
 
 

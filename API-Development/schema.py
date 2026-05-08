@@ -1,8 +1,8 @@
-from typing import Optional
+from typing import Optional,Literal
 
 from pydantic import BaseModel, ConfigDict, EmailStr
 from datetime import datetime
-
+from pydantic.types import conint
 
 class PostBase(BaseModel):
     title: str
@@ -25,6 +25,12 @@ class Post(PostBase):
     owner:UserOut
     model_config = ConfigDict(from_attributes=True) # This replaces orm_mode=True
     
+class PostWithVotes(BaseModel):
+    Post: Post
+    votes: int
+
+    model_config = ConfigDict(from_attributes=True)
+    
 class UserCreate(BaseModel):
     email:EmailStr
     password:str
@@ -40,3 +46,8 @@ class Token(BaseModel):
 
 class TokenData(BaseModel):
     id: Optional[int]=None
+
+class Vote(BaseModel):
+    post_id:int
+    dir:Literal[0,1]
+

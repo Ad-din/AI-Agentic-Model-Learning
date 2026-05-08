@@ -1,0 +1,110 @@
+why we need schema:
+
+its a pain to get all the value from the body
+the cleint can send whatever date they want
+the data isn't getting validated
+we ultimately want to froce the client to send data in a schema that we expect
+
+so, as a solution we will use pydantic.
+
+http status codes:
+
+200 ok: everything is good.
+201 created: used create operation in crud.
+404 not found: the page not found.
+
+ORM: Object Relational Mapper
+-sits between database and fasapi application.
+-Instead of manually defining tables in postgres, we can define our tables as python models
+-Queries can be made exclusively through python code. NO SQL in necessary.
+
+So, we will be using sql alchemy
+SQLALCHEMY:
+it is one of the most popular pyton ORMs.
+It is standalone library and has no association with FastAPI. It can be used with any other python web frameworks or any python based application.
+
+date:20th march 2026.
+Today we will be learning about schema models.
+-schema/pydantic models define the structure of a request & response
+-this ensure that when a user wants to create a post, the reqeust wil go only through if ti has a "title" and "content" in the body.
+
+date-23-04-26
+Today we will be learning about hashing.we will be using bcrypt for it
+
+Date-24-06-24
+started learning JWT Token Authentication
+
+JWT deep dive:
+
+Header: contains metadata. what type of algo we are going to use.
+also type. the token type;
+
+Payload:This one contains data. data we want to put in JWT. We shouldn't put too much cause that will make the package heavy,which causes more bandwith.
+
+
+Verify-Signature:
+ the secret key is in this part. 256-bit key.
+
+
+ Date-30-04-26
+ Composite keys:
+  In the world of databases, a **composite key** is a primary key that consists of **two or more columns** (attributes) to uniquely identify a row in a table. 
+
+While a standard primary key usually involves just one column (like an `Employee_ID`), a composite key is necessary when no single column can guarantee uniqueness on its own.
+
+---
+
+## How It Works
+Think of it like a coordinate system. A single "Latitude" doesn't tell you exactly where you are on Earth—you need both "Latitude" and "Longitude" to pinpoint a specific location.
+
+### Key Characteristics:
+* **Uniqueness:** The combination of values in the composite columns must be unique for every row.
+* **No Nulls:** Just like a standard primary key, none of the columns involved in a composite key can contain `NULL` values.
+* **Minimalism:** You should only include the minimum number of columns necessary to achieve uniqueness.
+
+
+
+---
+
+## A Real-World Example
+Imagine a database for a **University Enrollment** system. 
+
+If we have a table called `Enrollments`, we might have the following columns:
+1.  `Student_ID`
+2.  `Course_Code`
+3.  `Semester`
+
+* A `Student_ID` isn't enough to be a primary key because a student can enroll in many courses.
+* A `Course_Code` isn't enough because many students can take the same course.
+
+However, the combination of **`Student_ID` + `Course_Code`** ensures that a specific student cannot be enrolled in the exact same class twice in the same record. Here, the two columns together form the **Composite Key**.
+
+| Student_ID | Course_Code | Grade |
+| :--- | :--- | :--- |
+| 101 | CS50 | A |
+| 101 | MATH10 | B |
+| 102 | CS50 | A |
+| **101** | **CS50** | **Error (Duplicate Key)** |
+
+---
+
+## When Should You Use One?
+Composite keys are most frequently used in **junction tables** (also known as mapping or associative tables). These tables sit between two other tables to create a **Many-to-Many relationship**.
+
+> **Note:** Many modern developers prefer using a **"Surrogate Key"** (an artificial, auto-incrementing ID like `id: 1, 2, 3...`) instead of a composite key because it keeps foreign key relationships simpler and indexed faster. However, composite keys are still mathematically "pure" and excellent for ensuring data integrity at the schema level.
+
+date-1-5-26
+Databases migration tool: alembic
+sqlalchemy has limitations. It can't modify the table once created. We have seen that model.py. We had to delete the whole table from pgadmin and then restart the server again to create the modified table. So, to tackle this we will use alembic.
+
+alembic is also used for version control. like github it controls the database versions. 
+completed alembic with revision, upgrade, downgrade, autogenerate keywords. 
+
+Date- 7-5-26
+ What is CORS: Cross Origin Resource Sharing
+
+if we try to call our api from our chrome browser dev tool. We will get an error saying "has been blocked by CORS policy".
+
+So, CORS let us make requests from a web browser on one domain to server on a different domain. 
+
+By default our API will only allow web browsers on the same domain to make requests to localhost. 
