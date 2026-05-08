@@ -55,25 +55,25 @@ def run_migrations_offline() -> None:
 
 
 def run_migrations_online() -> None:
-    # GET THE URL FROM RENDER'S ENVIRONMENT VARIABLES
-    # Fallback to the one in alembic.ini if not found (for local use)
-    database_url = os.environ.get("DATABASE_URL")
+    # 1. Use the URL from settings (which handles Env Vars)
+    database_url = settings.DATABASE_URL
     
-    # Render URLs often start with 'postgres://', but SQLAlchemy 1.4+ 
-    # needs 'postgresql://'. This fix handles that:
-    if database_url and database_url.startswith("postgres://"):
+    if database_url.startswith("postgres://"):
         database_url = database_url.replace("postgres://", "postgresql://", 1)
 
-    configuration = config.get_section(config.config_ini_section)
+    # 2. Get the config section
+    section = config.get_section(config.config_ini_section, {})
     
-    if database_url:
-        configuration["sqlalchemy.url"] = database_url
+    # 3. FORCE the URL into the config dictionary
+    section["sqlalchemy.url"] = database_url
+
+    # 4. Pass that dictionary into the engine creator
     connectable = engine_from_config(
-        config.get_section(config.config_ini_section, {}),
+        section,
         prefix="sqlalchemy.",
         poolclass=pool.NullPool,
     )
-
+    
     with connectable.connect() as connection:
         context.configure(
             connection=connection, target_metadata=target_metadata
